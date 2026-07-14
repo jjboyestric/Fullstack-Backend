@@ -1,0 +1,121 @@
+=========================================================
+  REPOSITORIOS GITHUB – Sistema de Gestión Escolar
+  Colegio Bernardo O'Higgins
+  DSY1106 – Desarrollo Fullstack III – Parcial N°3
+=========================================================
+
+REPOSITORIO PRINCIPAL (documentación y guías)
+----------------------------------------------
+URL:         https://github.com/<tu-usuario>/Fullstack-Parcial3-OHiggins
+Rama:        main
+Descripción: Repositorio principal del proyecto. Contiene la documentación
+             general, diagrama de arquitectura de microservicios, informe de
+             pruebas unitarias, descripción de persistencia y guías de
+             instalación del sistema completo.
+
+Contenido:
+  - /docs/arquitectura.png         → Diagrama de arquitectura de microservicios
+  - /docs/informe_pruebas.md       → Informe de pruebas unitarias con métricas
+  - /docs/persistencia.md          → Descripción de implementación JPA
+  - /docs/repositorios.txt         → Este archivo
+  - README.md                      → Guía general del sistema
+
+
+REPOSITORIO FRONTEND
+----------------------------------------------
+URL:         https://github.com/<tu-usuario>/Fullstack-Frontend
+Rama:        main
+Descripción: Código fuente del componente frontend desarrollado en React 19 +
+             Vite. Incluye las páginas de gestión de notas, asistencia y resumen
+             de alumnos. Consume el BFF Orquestador y los microservicios
+             directamente mediante el patrón Facade (apiService.js).
+
+Tecnologías: React 19, Vite 8, React Router DOM 7, Lucide React
+Puerto:      http://localhost:5173 (desarrollo)
+
+Contenido:
+  - src/pages/          → InventoryPage, NotasPage, AsistenciaPage
+  - src/services/       → apiService.js (Facade Pattern)
+  - src/components/     → SidebarNav, ProductTable
+  - package.json        → Dependencias y scripts NPM
+  - README.md           → Instrucciones de instalación y ejecución
+
+
+REPOSITORIO BFF ORQUESTADOR (Backend)
+----------------------------------------------
+URL:         https://github.com/<tu-usuario>/Fullstack-Backend/BffOrquestador
+Rama:        main
+Descripción: Backend For Frontend implementado con Spring WebFlux (programación
+             reactiva). Orquesta llamadas en paralelo a MS Notas y MS Asistencia
+             usando Mono.zip(). Implementa patrón Facade y Circuit Breaker
+             (onErrorReturn para tolerancia a fallos).
+
+Tecnologías: Spring Boot 3, Spring WebFlux, Reactor, Lombok, SpringDoc
+Puerto:      http://localhost:8080
+Swagger:     http://localhost:8080/swagger-ui.html
+
+Contenido:
+  - BffController.java         → Endpoints REST /api/bff/**
+  - OrquestadorService.java    → Lógica de orquestación reactiva
+  - ResumenAlumnoDTO.java      → DTO de respuesta consolidada
+  - application.properties     → Configuración del servicio
+  - pom.xml                    → Dependencias Maven
+
+
+REPOSITORIO MS NOTAS (Backend)
+----------------------------------------------
+URL:         https://github.com/<tu-usuario>/Fullstack-Backend/MicroservicioNotas
+Rama:        main
+Descripción: Microservicio de gestión de notas académicas. Implementa CRUD
+             completo sobre la entidad NotaModel usando Spring Data JPA con
+             base de datos H2 in-memory. Incluye query JPQL personalizada
+             para cálculo de promedio.
+
+Tecnologías: Spring Boot 3, Spring Data JPA, H2, Lombok, JUnit 5, Mockito
+Puerto:      http://localhost:8081
+Swagger:     http://localhost:8081/swagger-ui.html
+H2 Console:  http://localhost:8081/h2-console
+
+Contenido:
+  - NotaController.java        → Endpoints REST /api/notas/**
+  - NotaService.java           → Lógica de negocio
+  - NotaModel.java             → Entidad JPA (@Entity)
+  - NotaRepository.java        → Repositorio JPA + JPQL custom
+  - NotaServiceTest.java       → 4 pruebas unitarias con Mockito
+  - application.properties     → Configuración JPA + H2
+  - pom.xml                    → Dependencias Maven
+
+
+REPOSITORIO MS ASISTENCIA (Backend)
+----------------------------------------------
+URL:         https://github.com/<tu-usuario>/Fullstack-Backend/MicroservicioAsistencia
+Rama:        main
+Descripción: Microservicio de gestión de asistencia escolar. Implementa CRUD
+             completo sobre AsistenciaModel con estados ENUM (PRESENTE, AUSENTE,
+             JUSTIFICADO). Calcula porcentaje de asistencia con consultas JPQL.
+
+Tecnologías: Spring Boot 3, Spring Data JPA, H2, Lombok, JUnit 5, Mockito
+Puerto:      http://localhost:8082
+Swagger:     http://localhost:8082/swagger-ui.html
+H2 Console:  http://localhost:8082/h2-console
+
+Contenido:
+  - AsistenciaController.java  → Endpoints REST /api/asistencia/**
+  - AsistenciaService.java     → Lógica de negocio
+  - AsistenciaModel.java       → Entidad JPA con Enum de estados
+  - AsistenciaRepository.java  → Repositorio JPA + JPQL custom
+  - AsistenciaServiceTest.java → 4 pruebas unitarias con Mockito
+  - application.properties     → Configuración JPA + H2
+  - pom.xml                    → Dependencias Maven
+
+
+=========================================================
+  INSTRUCCIONES PARA ACTUALIZAR ESTE ARCHIVO:
+  Reemplaza <tu-usuario> con el nombre de usuario real
+  de GitHub del equipo antes de entregar.
+=========================================================
+
+Fecha de generación: Junio 2025
+Asignatura: DSY1106 – Desarrollo Fullstack III
+Evaluación: Parcial N°3 (30% ponderación)
+Institución: DuocUC

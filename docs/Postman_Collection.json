@@ -1,0 +1,232 @@
+{
+  "info": {
+    "name": "Colegio Bernardo O'Higgins – API REST",
+    "description": "Colección Postman para el sistema de gestión escolar. Incluye BFF Orquestador (8080), MS Notas (8081) y MS Asistencia (8082).\n\nDSY1106 – Desarrollo Fullstack III – Parcial N°3",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "bff_url",      "value": "http://localhost:8080", "type": "string" },
+    { "key": "notas_url",    "value": "http://localhost:8081", "type": "string" },
+    { "key": "asist_url",    "value": "http://localhost:8082", "type": "string" },
+    { "key": "alumno_id",    "value": "1",                    "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "BFF Orquestador (8080)",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": "{{bff_url}}/api/bff/health",
+            "description": "Verifica que el BFF está activo."
+          },
+          "response": [
+            {
+              "name": "OK",
+              "status": "OK",
+              "code": 200,
+              "body": "BFF Orquestador - Colegio Bernardo O'Higgins: OK"
+            }
+          ]
+        },
+        {
+          "name": "Resumen Alumno",
+          "request": {
+            "method": "GET",
+            "url": "{{bff_url}}/api/bff/alumno/{{alumno_id}}/resumen",
+            "description": "Retorna ResumenAlumnoDTO consolidado: nombre, curso, promedio general y porcentaje de asistencia. Orquesta en paralelo MS Notas y MS Asistencia con Mono.zip()."
+          },
+          "response": [
+            {
+              "name": "OK",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"alumnoId\": 1,\n  \"nombreAlumno\": \"María Pérez\",\n  \"curso\": \"3°A\",\n  \"promedioGeneral\": 6.3,\n  \"totalClasesAsistidas\": 18,\n  \"totalClasesFaltadas\": 2,\n  \"porcentajeAsistencia\": 90.0\n}"
+            }
+          ]
+        },
+        {
+          "name": "Notas Alumno (vía BFF)",
+          "request": {
+            "method": "GET",
+            "url": "{{bff_url}}/api/bff/alumno/{{alumno_id}}/notas",
+            "description": "Obtiene las notas del alumno a través del BFF (delega a MS Notas)."
+          },
+          "response": [
+            {
+              "name": "OK",
+              "status": "OK",
+              "code": 200,
+              "body": "[\n  {\n    \"id\": 1,\n    \"alumnoId\": 1,\n    \"nombreAlumno\": \"María Pérez\",\n    \"curso\": \"3°A\",\n    \"asignatura\": \"Matemáticas\",\n    \"tipoEvaluacion\": \"PRUEBA\",\n    \"nota\": 6.5,\n    \"fechaEvaluacion\": \"2025-06-01\",\n    \"observaciones\": \"Excelente\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Asistencia Alumno (vía BFF)",
+          "request": {
+            "method": "GET",
+            "url": "{{bff_url}}/api/bff/alumno/{{alumno_id}}/asistencia",
+            "description": "Obtiene la asistencia del alumno a través del BFF (delega a MS Asistencia)."
+          },
+          "response": [
+            {
+              "name": "OK",
+              "status": "OK",
+              "code": 200,
+              "body": "[\n  {\n    \"id\": 1,\n    \"alumnoId\": 1,\n    \"nombreAlumno\": \"Juan González\",\n    \"curso\": \"3°A\",\n    \"fecha\": \"2025-06-01\",\n    \"estado\": \"PRESENTE\",\n    \"docente\": \"Prof. Ramírez\"\n  }\n]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "MS Notas (8081)",
+      "item": [
+        {
+          "name": "Listar Notas",
+          "request": {
+            "method": "GET",
+            "url": "{{notas_url}}/api/notas",
+            "description": "Retorna todas las notas registradas en el sistema."
+          },
+          "response": [
+            {
+              "name": "OK",
+              "status": "OK",
+              "code": 200,
+              "body": "[\n  {\n    \"id\": 1,\n    \"alumnoId\": 1,\n    \"nombreAlumno\": \"María Pérez\",\n    \"curso\": \"3°A\",\n    \"asignatura\": \"Matemáticas\",\n    \"tipoEvaluacion\": \"PRUEBA\",\n    \"nota\": 6.5,\n    \"fechaEvaluacion\": \"2025-06-01\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Notas por Alumno",
+          "request": {
+            "method": "GET",
+            "url": "{{notas_url}}/api/notas/alumno/{{alumno_id}}",
+            "description": "Filtra las notas por alumnoId."
+          }
+        },
+        {
+          "name": "Promedio Alumno",
+          "request": {
+            "method": "GET",
+            "url": "{{notas_url}}/api/notas/alumno/{{alumno_id}}/promedio",
+            "description": "Calcula el promedio general del alumno usando JPQL."
+          },
+          "response": [
+            {
+              "name": "OK",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"alumnoId\": 1,\n  \"nombre\": \"María Pérez\",\n  \"curso\": \"3°A\",\n  \"promedioGeneral\": 6.3,\n  \"totalEvaluaciones\": 3\n}"
+            }
+          ]
+        },
+        {
+          "name": "Registrar Nota",
+          "request": {
+            "method": "POST",
+            "url": "{{notas_url}}/api/notas",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"alumnoId\": 1,\n  \"nombreAlumno\": \"María Pérez\",\n  \"curso\": \"3°A\",\n  \"asignatura\": \"Matemáticas\",\n  \"tipoEvaluacion\": \"PRUEBA\",\n  \"nota\": 6.5,\n  \"fechaEvaluacion\": \"2025-06-01\",\n  \"observaciones\": \"Excelente desempeño\"\n}"
+            },
+            "description": "Crea una nueva nota. Retorna HTTP 201 con la entidad creada."
+          },
+          "response": [
+            {
+              "name": "Created",
+              "status": "Created",
+              "code": 201,
+              "body": "{\n  \"id\": 1,\n  \"alumnoId\": 1,\n  \"nombreAlumno\": \"María Pérez\",\n  \"nota\": 6.5\n}"
+            }
+          ]
+        },
+        {
+          "name": "Eliminar Nota",
+          "request": {
+            "method": "DELETE",
+            "url": "{{notas_url}}/api/notas/1",
+            "description": "Elimina la nota con el ID indicado. Retorna HTTP 204 No Content."
+          },
+          "response": [
+            {
+              "name": "No Content",
+              "status": "No Content",
+              "code": 204,
+              "body": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "MS Asistencia (8082)",
+      "item": [
+        {
+          "name": "Listar Asistencia",
+          "request": {
+            "method": "GET",
+            "url": "{{asist_url}}/api/asistencia",
+            "description": "Retorna todos los registros de asistencia."
+          }
+        },
+        {
+          "name": "Asistencia por Alumno",
+          "request": {
+            "method": "GET",
+            "url": "{{asist_url}}/api/asistencia/alumno/{{alumno_id}}",
+            "description": "Filtra registros de asistencia por alumnoId."
+          }
+        },
+        {
+          "name": "Resumen Asistencia",
+          "request": {
+            "method": "GET",
+            "url": "{{asist_url}}/api/asistencia/alumno/{{alumno_id}}/resumen",
+            "description": "Retorna clases asistidas, faltadas y porcentaje de asistencia."
+          },
+          "response": [
+            {
+              "name": "OK",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"alumnoId\": 1,\n  \"asistidas\": 18,\n  \"faltadas\": 2,\n  \"total\": 20,\n  \"porcentaje\": 90.0\n}"
+            }
+          ]
+        },
+        {
+          "name": "Registrar Asistencia",
+          "request": {
+            "method": "POST",
+            "url": "{{asist_url}}/api/asistencia",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"alumnoId\": 1,\n  \"nombreAlumno\": \"Juan González\",\n  \"curso\": \"3°A\",\n  \"fecha\": \"2025-06-01\",\n  \"estado\": \"PRESENTE\",\n  \"docente\": \"Prof. Ramírez\",\n  \"observaciones\": \"\"\n}"
+            },
+            "description": "Registra una asistencia. Estados válidos: PRESENTE, AUSENTE, JUSTIFICADO. Retorna HTTP 201."
+          },
+          "response": [
+            {
+              "name": "Created",
+              "status": "Created",
+              "code": 201,
+              "body": "{\n  \"id\": 1,\n  \"alumnoId\": 1,\n  \"estado\": \"PRESENTE\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Eliminar Asistencia",
+          "request": {
+            "method": "DELETE",
+            "url": "{{asist_url}}/api/asistencia/1",
+            "description": "Elimina el registro con el ID indicado. Retorna HTTP 204."
+          }
+        }
+      ]
+    }
+  ]
+}
